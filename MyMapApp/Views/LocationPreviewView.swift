@@ -69,7 +69,7 @@ extension LocationPreviewView {
     
     var learnMoreButton: some View {
         Button {
-            
+            vm.detailLocation = location
         } label: {
             Text("Learn more")
                 .frame(width: 125, height: 35)

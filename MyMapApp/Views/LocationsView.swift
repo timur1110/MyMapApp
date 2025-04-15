@@ -11,15 +11,22 @@ import MapKit
 struct LocationsView: View {
     
     @EnvironmentObject var vm: LocationsViewModel
+    let maxWidthForIPad: CGFloat = 700
     
     var body: some View {
         ZStack {
             mapLayer
+                .ignoresSafeArea()
             
             VStack {
                 header
+                    .frame(maxWidth: maxWidthForIPad)
+                    .padding()
                 Spacer()
                 previewLayer
+                    .sheet(item: $vm.detailLocation) { location in
+                        LocationsDetailView(location: location)
+                    }
             }
         }
     }
@@ -60,7 +67,6 @@ extension LocationsView {
         .background(.thickMaterial)
         .cornerRadius(10)
         .shadow(color: Color.black.opacity(0.3), radius: 20, x: 0, y: 15)
-        .padding()
     }
     
     private var mapLayer: some View {
@@ -72,12 +78,11 @@ extension LocationsView {
                     .scaleEffect(vm.currentLocation == location ? 1 : 0.6)
                     .animation(.easeInOut, value: vm.currentLocation)
                     .onTapGesture {
-                        vm.currentLocation = location
+                        vm.updateCurrentLocation(location: location)
                     }
                     .shadow(radius: 10)
             }
         })
-            .ignoresSafeArea()
     }
     
     private var previewLayer: some View {
@@ -85,6 +90,8 @@ extension LocationsView {
             if location == vm.currentLocation {
                 LocationPreviewView(location: location)
                     .padding()
+                    .frame(maxWidth: maxWidthForIPad)
+                    .frame(maxWidth: .infinity)
                     .transition(AnyTransition.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
             }
         }
